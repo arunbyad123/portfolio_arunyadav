@@ -11,12 +11,6 @@ function Contact() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
 
-  // Initialize EmailJS - Get these from emailjs.com
-  // 1. Sign up at emailjs.com
-  // 2. Add email service (Gmail recommended)
-  // 3. Create email template
-  // 4. Get your User ID from Account page
-
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -29,19 +23,27 @@ function Contact() {
     setIsSubmitting(true);
     setStatus('');
 
+    // Log for debugging
+    console.log('Form data being sent:', formData);
+
     try {
-      // Replace these with your actual EmailJS credentials
+      const templateParams = {
+        from_name: formData.name,
+        from_email: formData.email,
+        message: formData.message,
+        to_name: 'Arun Yadav'
+      };
+
+      console.log('Template params:', templateParams);
+
       const result = await emailjs.send(
-        'service_ccgenja',        // Get from EmailJS dashboard
-        'template_rnlz755',       // Get from EmailJS dashboard
-        {
-          from_name: formData.name,
-          from_email: formData.email,
-          message: formData.message,
-          to_email: 'arunyadavbelli8@gmail.com'  // Your email
-        },
-        'U-gXo3wMA6Ht0lLzH'         // Get from EmailJS dashboard
+        'service_ccgenja',        // Your Service ID
+        'template_rnlz755',       // Your Template ID
+        templateParams,
+        'U-gXo3wMA6Ht0lLzH'       // Your Public Key
       );
+
+      console.log('EmailJS Success:', result);
 
       if (result.text === 'OK') {
         setStatus('success');
@@ -53,7 +55,9 @@ function Contact() {
         }, 5000);
       }
     } catch (error) {
-      console.error('Email send error:', error);
+      console.error('EmailJS Error:', error);
+      console.error('Error text:', error.text);
+      console.error('Error status:', error.status);
       setStatus('error');
     } finally {
       setIsSubmitting(false);
@@ -187,7 +191,7 @@ function Contact() {
               {status === 'error' && (
                 <div className="status-message error">
                   <span>❌</span>
-                  <p>Oops! Something went wrong. Please try again!</p>
+                  <p>Oops! Something went wrong. Check the console (F12) for error details.</p>
                 </div>
               )}
             </form>
